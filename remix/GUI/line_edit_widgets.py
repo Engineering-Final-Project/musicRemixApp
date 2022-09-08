@@ -384,7 +384,3 @@ def create_error_message_box(txt, info):
     msg.setText(txt)
     msg.setInformativeText(info)
     msg.exec()
-
-
-
-

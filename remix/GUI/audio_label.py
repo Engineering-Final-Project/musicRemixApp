@@ -48,3 +48,4 @@ class AudioLabel(QWidget):
         else:
             txt = modify_text(self.af.get_title())
             self.thumbLabel.setText("\n" + txt)
+
