@@ -55,8 +55,8 @@ class Tools:
     @staticmethod
     def download_from_youtube(url, working_dir):
         """
-        This function downloads a video from youtube
-        :param url: link to a video from Youtube
+        This function downloads a video from YouTube
+        :param url: link to a video from YouTube
         :return: if url is valid (title, path to downloaded file, path to thumbnail), otherwise None
         """
         if not Tools.check_url(url):
@@ -88,7 +88,9 @@ class Tools:
     @staticmethod
     def check_url(url):
         """
-        A static method to check the validity of a given URL
+        A method to check a url validity
+        :param url: the url to check
+        :return: True if the url is valid, otherwise False
 
         >>> Tools.check_url("https://www.google.com")
         True
@@ -99,6 +101,12 @@ class Tools:
 
     @staticmethod
     def overlay_audio(audio_list, output_path='') -> AudioFile:
+        """
+        A method to overlay audio files
+        :param audio_list: a list of AudioFiles objects
+        :param output_path: the output path
+        :return: the overlaid audio
+        """
         sound = audio_list[0].get_track()
         for audio in range(1, len(audio_list)):
             sound1 = audio_list[audio].get_track()
@@ -110,13 +118,18 @@ class Tools:
         combined = Remix(output_path, audio_list[0], title=audio_list[0].get_title() + "_overlay")
         return combined
 
-    # https://github.com/jiaaro/pydub/blob/master/pydub/audio_segment.py
     @staticmethod
-    # https://gist.github.com/gchavez2/53148cdf7490ad62699385791816b1ea
     def audio_trim(audiofile: AudioFile, output_path, start_min, start_sec, end_min=None, end_sec=None) -> (
             AudioFile, str):
         """
-        This function saves the audio slice between start and end.
+        A method to keep the audio slice between start and end
+        :param audiofile: an AudioFile object
+        :param output_path: the output path
+        :param start_min: the minute at which the slicing starts
+        :param start_sec: the second at which the slicing starts
+        :param end_min: the minute at which the slicing ends
+        :param end_sec: the second at which the slicing ends
+        :return: The Remix slice and output_path
         """
         if start_min == end_min and start_sec == end_sec:
             return audiofile, output_path
@@ -144,15 +157,17 @@ class Tools:
         return extract, output_path
 
     @staticmethod
-    # https://www.thepythoncode.com/article/concatenate-audio-files-in-python
-    def concatenate_audio(audio_clip_list, output_path="") -> AudioFile:
+    def concatenate_audio(audio_list, output_path="") -> AudioFile:
         """
-        Concatenates two or more audio files into one audio file using PyDub library
+        A method to concatenate two or more audio files into one audio file
         and save it to `output_path`.
+        :param audio_list: a list of AudioFile objects
+        :param output_path: the output path
+        :return: a Remix object consisting in the concatenation of all audio_clip_list files
         """
         clips = []
         name = ""
-        for clip in audio_clip_list:
+        for clip in audio_list:
             if clip is not None:
                 clips.append(clip.get_track())
                 name += clip.get_title()
@@ -170,13 +185,21 @@ class Tools:
                     final_clip = final_clip + clips[i]
 
             if output_path == "":
-                output_path = audio_clip_list[0].get_path() + name + " concat.mp3"
+                output_path = audio_list[0].get_path() + name + " concat.mp3"
             final_clip.export(output_path, format='mp3')
-            final_clip = Remix(output_path, audio_clip_list[0], title=name + "_concat")
+            final_clip = Remix(output_path, audio_list[0], title=name + "_concat")
             return final_clip
 
     @staticmethod
     def audio_cut(audiofile: AudioFile, cut_min, cut_sec, outpath) -> (AudioFile, AudioFile):
+        """
+        A method to time split an audio file
+        :param audiofile: an AudioFile object
+        :param cut_min: the minute at which the split occurs
+        :param cut_sec: the second at which the split occurs
+        :param outpath: the output path
+        :return: two Remix objects
+        """
         if not outpath:
             outpath = audiofile.get_path()
         new_path1 = outpath + "_timesplit1.mp3"
@@ -194,7 +217,14 @@ class Tools:
     @staticmethod
     def audio_delete(audiofile: AudioFile, start_min, start_sec, end_min=None, end_sec=None, output_path=''):
         """
-        This function cuts off the audio slice between start and end.
+        This method cuts off the audio slice between start and end.
+        :param audiofile: an AudioFile object
+        :param start_min: the minute at which the cut starts
+        :param start_sec: the second at which the cut starts
+        :param end_min: the minute at which the cut ends
+        :param end_sec: the second at which the cut ends
+        :param output_path: the output path
+        :return: a Remix object which track has a section cut off
         """
         if end_min is None and end_sec is not None:
             raise Exception("Usage: the end min and sec values must be both None or both not None")
@@ -225,8 +255,15 @@ class Tools:
         return Tools.concatenate_audio([audio1, audio2], output_path)
 
     @staticmethod
-    # https://stackoverflow.com/questions/57299042/how-is-the-best-way-to-play-an-mp3-file-with-a-start-time-and-end-time-in-python
     def fade(audiofile: AudioFile, start_fading_secs=3, end_fading_secs=3, output_path=None) -> AudioFile:
+        """
+        A method to fade in an audio file
+        :param audiofile: an AudioFile object
+        :param start_fading_secs: the fading in last
+        :param end_fading_secs: the fading out last
+        :param output_path: the output path
+        :return: a Remix object that results from the input audiofile fading
+        """
         sound = audiofile.get_track()
         start_fading = start_fading_secs * 1000
         end_fading = end_fading_secs * 1000
@@ -239,6 +276,13 @@ class Tools:
 
     @staticmethod
     def fadein(audiofile: AudioFile, fading_secs=3, output_path='') -> AudioFile:
+        """
+        A method to fade in an audio file
+        :param audiofile: an AudioFile object
+        :param fading_secs: the fading last
+        :param output_path: the output path
+        :return: a Remix object that results from the input audiofile fading
+        """
         sound = audiofile.get_track()
         start_fading = fading_secs * 1000
         mp3 = sound.fade_in(start_fading)
@@ -251,6 +295,13 @@ class Tools:
 
     @staticmethod
     def fadeout(audiofile: AudioFile, fading_secs=3, output_path='') -> AudioFile:
+        """
+        A method to fade out an audio file
+        :param audiofile: an AudioFile object
+        :param fading_secs: the fading last
+        :param output_path: the output path
+        :return: a Remix object that results from the input audiofile fading
+        """
         sound = audiofile.get_track()
         end_fading = fading_secs * 1000
         mp3 = sound.fade_out(end_fading)
@@ -263,6 +314,13 @@ class Tools:
 
     @staticmethod
     def transform_audio_position(audiofile: AudioFile, transform_secs, output_path='') -> AudioFile:
+        """
+        A method to transform an audio position
+        :param audiofile: an AudioFile object
+        :param transform_secs: the seconds to add to the audio start
+        :param output_path: the output path
+        :return: a Remix object that starts transform_secs after the input AudioFile
+        """
         sound = audiofile.get_track()
         silence = AudioSegment.silent(transform_secs * 1000)
         end = (audiofile.get_duration()[0] * 60 + audiofile.get_duration()[1]) * 1000
@@ -276,6 +334,13 @@ class Tools:
 
     @staticmethod
     def export(audiofile: AudioFile, output_path, format):
+        """
+        A method to export an audio file
+        :param audiofile: an AudioFile object
+        :param output_path: the output path
+        :param format: the format of the output audio file
+        :return: None
+        """
         if format not in ["mp3", "mp4", "wav", "m4a"]:
             raise Exception("Wrong format")
         if not os.path.exists(output_path) or not os.path.isdir(output_path):
@@ -286,6 +351,11 @@ class Tools:
 
     @staticmethod
     def duplicate(audiofile):
+        """
+        A method to duplicate an AudioFile object
+        :param audiofile: the AudioFile to duplicate
+        :return: the duplicate object
+        """
         title = audiofile.get_title() + " duplicate"
         dir_path = os.path.dirname(audiofile.get_path())
         path = dir_path + '/' + title + audiofile.get_extension()
@@ -317,10 +387,22 @@ class Tools:
 
     @staticmethod
     def rename(audiofile: AudioFile, name: str):
+        """
+        A method to rename an audio file
+        :param audiofile: the AudioFile object to rename
+        :param name: the name to assign
+        :return:
+        """
         audiofile.set_title(name)
 
     @staticmethod
     def bpm_detector(audio_seg: AudioSegment, window=10):
+        """
+        A method to edtect an audio bpm
+        :param audio_seg: an AudioSegment object
+        :param window: /
+        :return: the median bpm of the audio
+        """
         workdir = tempfile.TemporaryDirectory()
         temp_file_path = workdir.name + "/temp.wav"
         f = audio_seg.export(temp_file_path, format="wav")
@@ -331,6 +413,11 @@ class Tools:
 
     @staticmethod
     def onset(audio_seg: AudioSegment):
+        """
+        A method to detect an audio onsets times
+        :param audio_seg: an AudioSegment object
+        :return: the onset times detected
+        """
         workdir = tempfile.TemporaryDirectory()
         temp_file_path = workdir.name + "/temp.wav"
         f = audio_seg.export(temp_file_path, format="wav")
@@ -341,6 +428,13 @@ class Tools:
 
     @staticmethod
     def speed_change(audiosegment: AudioSegment, output_path, speed=1.0) -> AudioSegment:
+        """
+        A method to change the speed of an audio file
+        :param audiosegment: an AudioSegment object
+        :param output_path: the output path
+        :param speed: the ratio of the speed to apply
+        :return: an AudioSegment with the speed changed by the given ratio
+        """
         tmp = tempfile.TemporaryDirectory()
         audiosegment.export(tmp.name + "/wav_temp_file.wav", format='wav')
         sound, fs = librosa.load(tmp.name + "/wav_temp_file.wav")
@@ -353,12 +447,26 @@ class Tools:
 
     @staticmethod
     def download_image(url: str, output_path: str) -> str:
+        """
+        A method to download an image
+        :param url: a url
+        :param output_path: the output path
+        :return: output_path
+        """
         output_path = output_path + "/" + url.split("/")[-1]
         wget.download(url, out=output_path)
         return output_path
 
     @staticmethod
     def resize_image(image_path: str, output_path: str, width: int, height: int):
+        """
+        A method to resize an image
+        :param image_path: the path to the image to resize
+        :param output_path: the path to save the resized image
+        :param width: the width of the output
+        :param height: the heught of the output
+        :return: None
+        """
         img = Image.open(image_path)
         img = img.resize((width, height), Image.ANTIALIAS)
         img.save(output_path)

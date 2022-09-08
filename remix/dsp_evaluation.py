@@ -10,6 +10,8 @@ from remix.tools import Tools
 def plot_image(path):
     """
     Plot an image from a path
+    :param path: the path of the image
+    :return: None
     """
     img = mpimg.imread(path)
     plt.imshow(img)
@@ -17,12 +19,22 @@ def plot_image(path):
 
 
 def get_np_array(sound: AudioSegment):
+    """
+    A function to get the NumPy array representation of an audio file
+    :param sound: an AudioSegment object
+    :return: the numpy array representing sound
+    """
     samples = sound.get_array_of_samples()
     arr = np.array(samples)  # arr.size: 17094656
     return arr
 
 
 def get_wave_data(wav_file):
+    """
+    A function to obtain sampling frequency, time space and channels of an audio file
+    :param wav_file: a wav file
+    :return: sampling frequency, time space, channels
+    """
     # Extract Raw Audio from Wav File
     signal = wav_file.readframes(-1)  # len=11866112
     signal = np.frombuffer(signal, dtype='int16')
@@ -41,6 +53,11 @@ def get_wave_data(wav_file):
 
 
 def plot_array(wav):
+    """
+    A function to plot the waveform of an audio file
+    :param wav: a wav audio file
+    :return: None
+    """
     with wave.open(wav, 'r') as wav_file:
         fs, time, channels = get_wave_data(wav_file)
 
@@ -55,6 +72,12 @@ def plot_array(wav):
 
 
 def plot_array_bpm(wav, bpm):
+    """
+    A function to plot the beats of an audio on its waveform
+    :param wav: the wav file to plot
+    :param bpm: the bpm of the wav file (bpm = 1/ beats per minute)
+    :return: None
+    """
     with wave.open(wav, 'r') as wav_file:
         fs, time, channels = get_wave_data(wav_file)
 
@@ -79,6 +102,12 @@ def plot_array_bpm(wav, bpm):
 
 
 def plot_array_onset(wav, onset):
+    """
+    A function to plot the onset times on the waveform of an audio
+    :param wav: the wav file to plot
+    :param onset: the onset times of wav
+    :return: None
+    """
     with wave.open(wav, 'r') as wav_file:
         fs, time, channels = get_wave_data(wav_file)
 
@@ -91,37 +120,3 @@ def plot_array_onset(wav, onset):
         plt.plot(onset, '.', color='yellow')
         plt.savefig("/home/miriams/PycharmProjects/remixProject/tests/tests_try/onset graph")
         plt.show()
-
-
-if __name__ == "__main__":
-    # s = AudioSegment.from_file("/home/miriams/PycharmProjects/remixProject/remix/demo/"
-    #                            "Nuvole Bianche (by Ludovico Einaudi) for Two Cellos - Mr & Mrs Cello.mp3")
-    # # array = get_np_array(s)
-    # wav_path = "/home/miriams/PycharmProjects/remixProject/tests/tests_try/wav_einaudi"
-    # s.export(wav_path, format="wav")
-    # s_bpm = Tools.bpm_detector(s)  # Queen_median=81.24539425202653, einaudi_median=98.79253567508232
-    # plot_array_bpm(wav_path, s_bpm)
-    # onsets = Tools.onset(s)  # list of floats of length=308 (Queen)
-    # plot_array_onset(wav_path, onsets)
-
-    # queen = AudioSegment.from_file("we_will_rock_you.mp3")
-    # wav_path = "we_will_rock_you.wav"
-    # queen.export(wav_path, format="wav")
-    # queen_bpm = Tools.bpm_detector(queen)  # 81.35558372418976
-    # plot_array_bpm(wav_path, queen_bpm/2)
-    # onsets = Tools.onset(queen)  # list of floats of length=308 (Queen)
-    # plot_array_onset(wav_path, onsets)
-
-    einaudi = AudioSegment.from_file('Ludovico Einaudi - Nuvole Bianche.mp3')
-    wav_path = "einaudi.wav"
-    einaudi.export(wav_path, format="wav")
-    einaudi_bpm = Tools.bpm_detector(einaudi)  # 93.72590358505852
-    # print(einaudi_bpm)
-    plot_array_bpm(wav_path, einaudi_bpm / 4)
-
-    # young = AudioSegment.from_file("/home/miriams/PycharmProjects/remixProject/remix/demo/Alphaville - Forever Young ~Official Video.mp3")
-    # wav_path = "young.wav"
-    # young.export(wav_path, format="wav")
-    # bpm = Tools.bpm_detector(young)  # 69.07137375287797
-    # print(bpm)
-    # plot_array_bpm(wav_path, bpm)

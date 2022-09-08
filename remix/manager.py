@@ -93,24 +93,3 @@ class Manager:
             self._projects.pop(proj_name)
 
 
-if __name__ == "__main__":
-    # The client code.
-
-    s1 = Manager.get_instance()
-
-    # s2 = Manager.get_instance()
-    #
-    # if id(s1) == id(s2):
-    #     print("Singleton works, both variables contain the same instance.")
-    # else:
-    #     print("Singleton failed, variables contain different instances.")
-
-    # s1.create_project("First_Project")
-    # pr = s1.get_project("First_Project")
-
-    s2 = Manager.get_instance()
-
-    if id(s1) == id(s2):
-        print("Singleton works, both variables contain the same instance.")
-    else:
-        print("Singleton failed, variables contain different instances.")

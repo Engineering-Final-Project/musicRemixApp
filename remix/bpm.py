@@ -1,16 +1,18 @@
-# https://github.com/scaperot/the-BPM-detector-python/blob/master/bpm_detection/bpm_detection.py
-import argparse
 import array
 import math
 import wave
 
-import matplotlib.pyplot as plt
 import numpy
 import pywt
 from scipy import signal
 
 
 def read_wav(filename):
+    """
+    A function to read a wav file
+    :param filename: the name of the file
+    :return: the number of samples and the sampling frequency of the audio
+    """
     # open file, get metadata for audio
     wf = wave.open(filename, "rb")
 
@@ -27,13 +29,20 @@ def read_wav(filename):
     return samps, fs
 
 
-# print an error when no data can be found
 def no_audio_data():
+    """
+    prints an error when no data can be found
+    :return: None
+    """
     raise Exception("No audio data for sample, skipping...")
 
 
-# simple peak detection
 def peak_detect(data):
+    """
+    A simple peak detection
+    :param data: the audio to detect
+    :return: the peak
+    """
     max_val = numpy.amax(abs(data))
     peak_ndx = numpy.where(data == max_val)
     if len(peak_ndx[0]) == 0:  # if nothing found then the max must be negative
@@ -42,6 +51,12 @@ def peak_detect(data):
 
 
 def bpm_detector_helper(data, fs):
+    """
+    A function to apply the Discrete Wavelet Transform to an audio, filter it, calculate its auto-correlation and bpm
+    :param data: the input data
+    :param fs: the sampling frequency of the data
+    :return: bpm, correlation
+    """
     cA = []
     cD_sum = []
     levels = 4
@@ -96,6 +111,12 @@ def bpm_detector_helper(data, fs):
 
 
 def bpm_detector(filename, window=10):
+    """
+    A function to detect the bpm of an audio
+    :param filename: the path to the audio file
+    :param window: the number of samples in each window
+    :return: the bpm, correlation
+    """
     global correl, bpm, n
     samps, fs = read_wav(filename)
     correl = []
@@ -131,24 +152,3 @@ def bpm_detector(filename, window=10):
     if return_value < 60:
         return_value *= 2
     return return_value, correl
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Process .wav file to determine the Beats Per Minute.")
-    parser.add_argument("--filename", required=True, help=".wav file for processing")
-    parser.add_argument(
-        "--window",
-        type=float,
-        default=3,
-        help="Size of the the window (seconds) that will be scanned to determine the bpm. Typically less than 10 seconds. [3]",
-    )
-
-    args = parser.parse_args()
-    filename = args.filename
-    window = args.window
-    bpm, correl = bpm_detector(filename, window)
-    print("Completed!  Estimated Beats Per Minute:", bpm)
-
-    n = range(0, len(correl))
-    plt.plot(n, abs(correl))
-    plt.show(block=True)
